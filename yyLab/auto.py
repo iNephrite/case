@@ -13,7 +13,8 @@ def Lab_job():
     yy_Lab("660","1290")
 
 def get_headers_cookie():
-    nocode = requests.get(os.environ.get("Lab_Url"))
+    proxies = {'http':'socks5://127.0.0.1:1080', 'https':'socks5://127.0.0.1:1080'}
+    nocode = requests.get(os.environ.get("Lab_Url"),proxies=proxies)
     jsessionid = nocode.url[55:87]
 
     headers = {"Cookie": "JSESSIONID=" + jsessionid + "; JSESSIONID_NS_Sig=Auskw42vcZYUHmaH",
