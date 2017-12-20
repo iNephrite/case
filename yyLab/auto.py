@@ -6,28 +6,25 @@ import json
 import os
 import logging
 logging.basicConfig()
-
+rs = requests.Session()
+proxies = {'http':'socks5://0.0.0.0:6000', 'https':'socks5://0.0.0.0:6000'}
 # 输出时间
 def Lab_job():
     yy_Lab("480","660")
-    yy_Lab("660","1290")
+    yy_Lab("1110","1290")
 
 def get_headers_cookie():
-    proxies = {'http':'socks5://127.0.0.1:1080', 'https':'socks5://127.0.0.1:1080'}
-    nocode = requests.get(os.environ.get("Lab_Url"),proxies=proxies)
-    jsessionid = nocode.url[55:87]
-
-    headers = {"Cookie": "JSESSIONID=" + jsessionid + "; JSESSIONID_NS_Sig=Auskw42vcZYUHmaH",
-			   'Content-Type': 'application/json'}
+    nocode = rs.get(os.environ.get("Lab_Url"),proxies=proxies)  
+    headers = {'Content-Type': 'application/json'}
     return headers
 
 def get_ruleid(headers):
-    url = 'http://yy.nbut.edu.cn/laa/discuss/userAppoint/default'
+    url = 'http://10.23.4.31/laa/discuss/userAppoint/default'
 
-    r = requests.get(url, headers=headers)
+    r = rs.get(url, headers=headers,proxies=proxies)
 
     selector = etree.HTML(r.text)
-
+   
     ruleid = selector.xpath('//*[@id="timeSelect"]/option[3]')[0].attrib['value']
     return ruleid
 
@@ -36,7 +33,7 @@ def post_form(ruleid,headers,stime,etime):
 		"_subject": "学习",
 		"_stime": stime,  # 480 1110
 		"_etime": etime,  # 660 1290
-		"_roomid": "81bc4a16d0884be7a3ded10f8a5f2a6b",
+		"_roomid": "1285b3ca77594b3095c7b89d4922553c",
 		"UUID": "VEmkgCYM",
 		"ruleId": ruleid,
 		"_summary": "学习",
@@ -45,9 +42,9 @@ def post_form(ruleid,headers,stime,etime):
 		"_seatno": ""
 	}
 
-    posturl = 'http://yy.nbut.edu.cn/laa/form/dynamic/saveForm'
+    posturl = 'http://10.23.4.31/laa/form/dynamic/saveForm'
 
-    getstatus = requests.post(posturl, data=json.dumps(form), headers=headers)
+    getstatus = rs.post(posturl, data=json.dumps(form), headers=headers,proxies=proxies)
 
     return (json.loads(getstatus.content)['status'])
 
